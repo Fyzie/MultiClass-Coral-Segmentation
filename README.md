@@ -1,2 +1,2 @@
-# Multiclass Coral Segmentation
+# Multi-class Coral Segmentation
 
