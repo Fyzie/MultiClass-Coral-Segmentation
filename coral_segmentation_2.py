@@ -124,6 +124,7 @@ for x, image_folder in enumerate(image_folders):
                     num = num + 1
 print("number of images:\n", num)
 
+# Mask loading with integer encoding
 mask_folders = os.listdir(mask_directory)
 mask_folders.sort()
 # print(masks)
@@ -173,6 +174,7 @@ for x in range(10):
 print(np.unique(y_train))
 n_classes = len(np.unique(y_train))
 
+# One hot encoding
 from keras.utils import to_categorical
 train_masks_cat = to_categorical(y_train, num_classes=n_classes)
 y_train_cat = train_masks_cat.reshape((y_train.shape[0], y_train.shape[1], y_train.shape[2], n_classes))
