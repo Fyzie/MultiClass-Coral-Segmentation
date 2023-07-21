@@ -211,10 +211,12 @@ chosen_losses = 'ce'
 def lr_schedule(epoch):
     initial_lr = 0.001  # Initial learning rate
     decay_rate = 0.1    # Decay rate
-    epochs_per_decay = 10  # Number of epochs for each decay
+    epochs_per_decay = 100  # Number of epochs for each decay
 
     # New learning rate for current epoch
     lr = initial_lr * (decay_rate ** (epoch // epochs_per_decay))
+    if lr < 0.0001:
+        lr = 0.0001
 
     return lr
 
