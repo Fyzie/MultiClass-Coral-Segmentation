@@ -19,7 +19,7 @@ from skimage import io
 from patchify import patchify
 
 ###############################################################################################
-
+# Mask overlay
 def segmentation_map_to_image(
     result: np.ndarray, colormap: np.ndarray, remove_holes=False
 ) -> np.ndarray:
