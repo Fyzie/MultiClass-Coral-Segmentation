@@ -63,7 +63,7 @@ def segmentation_map_to_image(
 gpu_options = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.833)
 sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=gpu_options))
 ###################################################################################################################
-
+# Paths
 image_format = 'tiff'
 
 image_directory = 'D:/Pycharm Projects/Coral Segmentation/raw_data/train/images/'
@@ -79,7 +79,7 @@ logs_name = model_save + '/logs.txt'
 graph_name = model_save + '/graph.png'
 table_name = model_save + '/table.txt'
 ###############################################################################################
-# data preparation
+# Training settings
 
 # 256/ 512
 SIZE = 256
@@ -96,7 +96,7 @@ epochs = 150
 remarks = 'Filtered data_variable learning rate'
 
 ###############################################################################################
-
+# Data loading
 image_dataset = [] 
 mask_dataset = []  
 
@@ -151,7 +151,7 @@ for x, mask_folder in enumerate(mask_folders):
 print("number of masks:\n", num)
 
 ###############################################################################################
-
+# Data curation
 image_dataset = np.expand_dims(normalize(np.array(image_dataset), axis=1), 3)
 mask_dataset = np.expand_dims((np.array(mask_dataset)), 3)
 
@@ -181,7 +181,7 @@ test_masks_cat = to_categorical(y_test, num_classes=n_classes)
 y_test_cat = test_masks_cat.reshape((y_test.shape[0], y_test.shape[1], y_test.shape[2], n_classes))
 
 ###############################################################################################
-
+# Get model
 IMG_HEIGHT = X_train.shape[1]
 IMG_WIDTH  = X_train.shape[2]
 IMG_CHANNELS = X_train.shape[3]
@@ -190,7 +190,7 @@ def get_model():
     return multi_unet_model(n_classes, IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS)
 
 ###############################################################################################
-
+# Metrics and Losses
 iou_score = sm.metrics.IOUScore(threshold=0.5)
 f_score = sm.metrics.FScore(threshold=0.5)
 hybrid_metrics = [iou_score, f_score]
@@ -205,7 +205,7 @@ def hybrid_loss(y_true, y_pred):
 chosen_losses = 'ce'
 
 ###############################################################################################
-
+# Learning rate settings
 def lr_schedule(epoch):
     initial_lr = 0.001  # Initial learning rate
     decay_rate = 0.1    # Decay rate
@@ -224,7 +224,7 @@ class PrintLearningRateCallback(tf.keras.callbacks.Callback):
         print(f"Learning Rate for epoch {epoch + 1}: {lr:.6f}")
 
 ###############################################################################################
-
+# Model compilation and callbacks
 model = get_model()
 model.compile(optimizer='adam', loss=hybrid_loss, metrics=[hybrid_metrics])
 model.summary()
@@ -239,7 +239,7 @@ checkpointer = ModelCheckpoint(model_name, verbose=1, save_best_only=True, mode=
 callbacks = [csv_logger, checkpointer, lr_scheduler, PrintLearningRateCallback()]
 
 ###############################################################################################
-
+# Model training
 start = datetime.now()
 
 history = model.fit(X_train, y_train_cat, 
@@ -258,7 +258,7 @@ print("Runtime: {:.2f} minutes".format(run_time))
 # model.save('test.hdf5')
 
 ############################################################
-# evaluate model
+# Model evaluation
 loss_, iou_, f_score = model.evaluate(X_test, y_test_cat)
 print("Loss = ", loss_)
 print("IoU = ", iou_)
@@ -306,7 +306,7 @@ y_pred=model.predict(X_test)
 y_pred_argmax=np.argmax(y_pred, axis=3)
 
 ##################################################
-
+# IoU for each class
 from keras.metrics import MeanIoU
 n_classes = 3
 IOU_keras = MeanIoU(num_classes=n_classes)  
@@ -430,6 +430,7 @@ plt.show()
 # red - porites
 
 #####################################################################
+# Result recordings
 table = []
 col_names = ['Loss', 'IoU', 'F_score','Training Time']
 data = [loss_, iou_, f_score, run_time]
