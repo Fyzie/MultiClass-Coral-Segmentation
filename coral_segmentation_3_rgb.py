@@ -499,11 +499,13 @@ for bil, image in enumerate(images):
     
     plt.figure(figsize=(60, 30))
     plt.subplot(221)
-    plt.title('Large Image')
+    plt.title('Large Image',fontsize=80)
     plt.imshow(bgr_image)
+    plt.axis('off')
     plt.subplot(222)
-    plt.title('Prediction of large Image')
+    plt.title('Prediction of large Image',fontsize=80)
     plt.imshow(image_with_mask1)
+    plt.axis('off')
     plt.savefig('%s/image_%s'%(model_save,bil+1))
     plt.show()
 
