@@ -82,7 +82,7 @@ else:
         model_folder = trials[-1]
     else:
         folder_num = int(trials[-1].split('_')[-1])
-        if folder_num < 10:
+        if folder_num < 9:
             model_folder = 'test_' + '0' + str(folder_num+1)
         else:
             model_folder = 'test_' + str(folder_num+1)
